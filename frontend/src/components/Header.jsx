@@ -1,13 +1,22 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const Header = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token"); // Check if user is logged in
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/login"); // Redirect to login after logout
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim() !== "") {
+      navigate(`/search?query=${encodeURIComponent(searchQuery)}`);
+    }
   };
 
   return (
@@ -20,6 +29,21 @@ const Header = () => {
           ArtBid
         </Link>
       </h1>
+      
+      {/* Search Bar */}
+      <form onSubmit={handleSearch} className="flex items-center bg-white rounded p-1">
+        <input 
+          type="text" 
+          placeholder="Search artworks..." 
+          className="p-2 rounded-l text-black"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <button type="submit" className="bg-blue-500 text-white px-3 py-1 rounded-r hover:bg-blue-700">
+          Search
+        </button>
+      </form>
+      
       <nav>
         {!token && (
           <>
