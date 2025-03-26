@@ -1,12 +1,14 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
-from .serializers import RegisterSerializer
-from rest_framework.permissions import AllowAny
-from rest_framework.decorators import api_view, permission_classes
+from .serializers import RegisterSerializer, ArtSerializer
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from django.shortcuts import get_object_or_404
+from .models import Art
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register_user(request):
@@ -58,14 +60,6 @@ def login_user(request):
         return Response({'error': 'Invalid username or password'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
-from django.shortcuts import get_object_or_404
-from .models import Art
-from .serializers import ArtSerializer
-
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def upload_art(request):
@@ -89,25 +83,30 @@ def upload_art(request):
     serializer = ArtSerializer(art, many=False)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def list_arts(request):
     """Retrieve all art listings"""
     arts = Art.objects.all().order_by('-created_at')
     serializer = ArtSerializer(arts, many=True)
     return Response(serializer.data)
 
+
 @api_view(['GET'])
-def art_detail(request, art_id):
-    """Retrieve details of a specific art"""
-    art = get_object_or_404(Art, _id=art_id)
+@permission_classes([AllowAny])
+def art_detail(request, art_uuid):
+    """Retrieve details of a specific art using UUID"""
+    art = get_object_or_404(Art, uuid=art_uuid)
     serializer = ArtSerializer(art, many=False)
     return Response(serializer.data)
 
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def place_bid(request, art_id):
-    """Place a bid on an artwork"""
-    art = get_object_or_404(Art, _id=art_id)
+def place_bid(request, art_uuid):
+    """Place a bid on an artwork using UUID"""
+    art = get_object_or_404(Art, uuid=art_uuid)
     user = request.user
     bid_amount = request.data.get('bid_amount')
 

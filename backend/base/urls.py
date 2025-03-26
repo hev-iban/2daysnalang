@@ -6,6 +6,6 @@ urlpatterns = [
     path('login/', login_user, name='login'),
     path('upload-art/', upload_art, name='upload_art'),
     path('arts/', list_arts, name='list_arts'),
-    path('arts/<int:art_id>/', art_detail, name='art_detail'),
-    path('arts/<int:art_id>/bid/', place_bid, name='place_bid'),
+    path('arts/<uuid:art_uuid>/', art_detail, name='art_detail'),
+    path('arts/<uuid:art_uuid>/bid/', place_bid, name='place_bid'),
 ]

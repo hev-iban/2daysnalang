@@ -38,10 +38,10 @@ const ArtBidding = () => {
     }
   };
 
-  const handleBid = async (artId) => {
+  const handleBid = async (artUuid) => {
     try {
       await axios.post(
-        `${API_URL}/arts/${artId}/bid/`,
+        `${API_URL}/arts/${artUuid}/bid/`,
         { bid_amount: bidAmount },
         { headers: { Authorization: `Token ${token}` } }
       );
@@ -58,7 +58,7 @@ const ArtBidding = () => {
       <h1 className="text-2xl font-bold">Art Bidding Platform</h1>
       <div className="mt-4 grid grid-cols-3 gap-4">
         {arts.map((art) => (
-          <div key={art._id} className="border p-4 rounded-lg shadow">
+          <div key={art.uuid} className="border p-4 rounded-lg shadow">
             <img
               src={art.image || "placeholder.jpg"}
               alt={art.name}
@@ -88,7 +88,7 @@ const ArtBidding = () => {
             className="border p-2 rounded w-full mt-2"
           />
           <button
-            onClick={() => handleBid(selectedArt._id)}
+            onClick={() => handleBid(selectedArt.uuid)}
             className="mt-2 bg-green-500 text-white px-4 py-2 rounded"
           >
             Submit Bid
