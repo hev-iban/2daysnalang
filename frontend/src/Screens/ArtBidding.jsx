@@ -8,6 +8,7 @@ const ArtBidding = () => {
   const [selectedArt, setSelectedArt] = useState(null);
   const [bidAmount, setBidAmount] = useState("");
   const [token, setToken] = useState(localStorage.getItem("token") || "");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchArts();
@@ -66,14 +67,33 @@ const ArtBidding = () => {
     }
   };
 
+  // Filter artworks based on search query
+  const filteredArts = arts.filter(
+    (art) =>
+      art.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      art.artist.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      String(art.start_price).includes(searchQuery)
+  );
+
   return (
     <div className="container p-4">
       <h1 className="text-2xl font-bold">Art Bidding Platform</h1>
 
+      {/* Search Bar */}
+      <div className="mt-4">
+        <input
+          type="text"
+          placeholder="Search by name, price, or artist..."
+          className="border p-2 rounded w-full"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
+
       <h3 className="text-xl font-semibold mt-6">Available Artworks</h3>
       <div className="mt-4 grid grid-cols-3 gap-4">
-        {arts.length > 0 ? (
-          arts.map((art) => (
+        {filteredArts.length > 0 ? (
+          filteredArts.map((art) => (
             <div key={art.uuid} className="border p-4 rounded-lg shadow">
               <img
                 src={art.image ? `${API_URL}${art.image}` : "placeholder.jpg"}
@@ -83,6 +103,7 @@ const ArtBidding = () => {
               />
               <h2 className="text-lg font-semibold mt-2">{art.name}</h2>
               <p className="text-gray-600">{art.description}</p>
+              <p className="text-gray-500">Artist: {art.artist}</p>
               <p className="font-bold">Starting Price: ${art.start_price}</p>
               <button
                 onClick={() => setSelectedArt(art)}
