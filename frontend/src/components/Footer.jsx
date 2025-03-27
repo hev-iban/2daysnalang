@@ -1,4 +1,8 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import "@fortawesome/fontawesome-free/css/all.min.css";
+
+
 
 export default function Footer() {
   return (
@@ -7,18 +11,12 @@ export default function Footer() {
         <div className="row">
           {/* Social Media */}
           <div className="col-md-3 text-center mb-3">
-            <h5>Follow Us</h5>
-            <a href="https://facebook.com" className="text-light mx-2">
-              <i className="fab fa-facebook-f"></i>
-            </a>
-            <a href="https://twitter.com" className="text-light mx-2">
-              <i className="fab fa-twitter"></i>
-            </a>
-            <a href="https://instagram.com" className="text-light mx-2">
-              <i className="fab fa-instagram"></i>
-            </a>
-            <a href="https://linkedin.com" className="text-light mx-2">
-              <i className="fab fa-linkedin-in"></i>
+  <h5>Follow Us</h5>
+  <a href="https://www.facebook.com/profile.php?id=100008506117228" target="_blank" rel="noopener noreferrer" className="text-light mx-2">
+    <i className="fab fa-facebook fa-2x"></i> {/* Facebook logo */}
+  </a>
+  <a href="https://www.instagram.com/confy_ash/" target="_blank" rel="noopener noreferrer" className="text-light mx-2">
+    <i className="fab fa-instagram fa-2x"></i> {/* Instagram logo */}
             </a>
           </div>
 
@@ -26,10 +24,8 @@ export default function Footer() {
           <div className="col-md-3">
             <h5>Quick Links</h5>
             <ul className="list-unstyled">
-              <li><a href="/" className="text-light">Home</a></li>
-              <li><a href="/about" className="text-light">About Us</a></li>
-              <li><a href="/auctions" className="text-light">Live Auctions</a></li>
-              <li><a href="/contact" className="text-light">Contact</a></li>
+            <li><Link to="/about">About Us</Link></li>
+            <li><Link to="/contact">Contact</Link></li>
             </ul>
           </div>
 
@@ -37,10 +33,9 @@ export default function Footer() {
           <div className="col-md-3">
             <h5>Support</h5>
             <ul className="list-unstyled">
-              <li><a href="/help" className="text-light">Help Center</a></li>
-              <li><a href="/faq" className="text-light">FAQs</a></li>
-              <li><a href="/privacy" className="text-light">Privacy Policy</a></li>
-              <li><a href="/terms" className="text-light">Terms of Service</a></li>
+            <li><Link to="/faqs">FAQs</Link></li>
+            <li><Link to="/privacy-policy">Privacy Policy</Link></li>
+            <li><Link to="/terms-of-service">Terms of Service</Link></li>
             </ul>
           </div>
 
