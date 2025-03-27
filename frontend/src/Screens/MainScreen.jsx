@@ -39,6 +39,21 @@ const MainScreen = () => {
         );
     };
 
+    // Function to calculate remaining time
+    const getRemainingTime = (endDate) => {
+        const now = new Date();
+        const end = new Date(endDate);
+        const diff = end - now;
+
+        if (diff <= 0) {
+            return "Auction Ended";
+        }
+
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        return `${hours}h ${minutes}m remaining`;
+    };
+
     return (
         <div className="main-container">
             <h2 className="welcome-text">Welcome, {user?.username}!</h2>
@@ -59,22 +74,29 @@ const MainScreen = () => {
             {/* Art Grid */}
             <div className="art-grid">
                 {filteredArts.length > 0 ? (
-                    filteredArts.map((art) => (
-                        <Link to={`/art/${art.uuid}`} key={art.uuid} className="art-card">
-                            <div className="art-image">
-                                <img
-                                    src={art.image ? `${API_URL}${art.image}` : "/placeholder.jpg"}
-                                    alt={art.name}
-                                    onError={(e) => (e.target.src = "/placeholder.jpg")}
-                                />
-                            </div>
-                            <div className="art-details">
-                                <h2>{art.name}</h2>
-                                <p className="description">{art.description}</p>
-                                <p className="price">Starting Price: ${art.start_price}</p>
-                            </div>
-                        </Link>
-                    ))
+                    filteredArts.map((art) => {
+                        const isAuctionEnded = new Date(art.end_date) < new Date();
+
+                        return (
+                            <Link to={`/art/${art.uuid}`} key={art.uuid} className="art-card">
+                                <div className="art-image">
+                                    <img
+                                        src={art.image ? `${API_URL}${art.image}` : "/placeholder.jpg"}
+                                        alt={art.name}
+                                        onError={(e) => (e.target.src = "/placeholder.jpg")}
+                                    />
+                                </div>
+                                <div className="art-details">
+                                    <h2>{art.name}</h2>
+                                    <p className="description">{art.description}</p>
+                                    <p className="price">Starting Price: ${art.start_price}</p>
+                                    {art.fixed_price && (
+                                        <p className="fixed-price">Fixed Price: ${art.fixed_price}</p>
+                                    )}
+                                </div>
+                            </Link>
+                        );
+                    })
                 ) : (
                     <p className="no-artworks">No artworks found.</p>
                 )}

@@ -11,7 +11,7 @@ const ArtBidding = () => {
   const [bidAmount, setBidAmount] = useState("");
   const [token, setToken] = useState(localStorage.getItem("token") || "");
   const [searchQuery, setSearchQuery] = useState("");
-  const navigate = useNavigate(); // Use navigate for redirection
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchArts();
@@ -46,7 +46,7 @@ const ArtBidding = () => {
     }
   };
 
-  const handleBid = async (artUuid) => {
+  const handleBid = async (artUuid, fixedPrice, endDate) => {
     if (!token) {
       alert("You must be logged in to place a bid.");
       return;
@@ -56,13 +56,27 @@ const ArtBidding = () => {
       return;
     }
 
+    const currentDate = new Date();
+    const auctionEndDate = new Date(endDate);
+
+    if (auctionEndDate < currentDate) {
+      alert("This auction has already ended.");
+      return;
+    }
+
     try {
-      await axios.post(
+      const response = await axios.post(
         `${API_URL}/api/arts/${artUuid}/bid/`,
         { bid_amount: bidAmount },
         { headers: { Authorization: `Token ${token}` } }
       );
-      alert("Bid placed successfully!");
+
+      if (fixedPrice && parseFloat(bidAmount) >= parseFloat(fixedPrice)) {
+        alert("You met the fixed price! Auction is now closed.");
+      } else {
+        alert("Bid placed successfully!");
+      }
+      
       fetchArts();
     } catch (error) {
       alert("Failed to place bid. Please try again.");
@@ -106,8 +120,17 @@ const ArtBidding = () => {
               <h2 className="art-name">{art.name}</h2>
               <p className="art-artist">Artist: {art.artist}</p>
               <p className="art-price">Starting Price: ${art.start_price}</p>
-              <button className="bid-button" onClick={(e) => { e.stopPropagation(); setSelectedArt(art); }}>
-                Place Bid
+              {art.fixed_price && <p className="art-fixed-price">Fixed Price: ${art.fixed_price}</p>}
+              <p className="art-end-date">Auction Ends: {new Date(art.end_date).toLocaleString()}</p>
+              <button 
+                className="bid-button" 
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  setSelectedArt(art); 
+                }}
+                disabled={new Date(art.end_date) < new Date()} // Disable button if auction has ended
+              >
+                {new Date(art.end_date) < new Date() ? "Auction Ended" : "Place Bid"}
               </button>
             </div>
           ))
@@ -127,7 +150,9 @@ const ArtBidding = () => {
             placeholder="Enter bid amount"
           />
           <div className="bid-buttons">
-            <button onClick={() => handleBid(selectedArt.uuid)}>Submit Bid</button>
+            <button onClick={() => handleBid(selectedArt.uuid, selectedArt.fixed_price, selectedArt.end_date)}>
+              Submit Bid
+            </button>
             <button onClick={() => setSelectedArt(null)}>Cancel</button>
           </div>
         </div>
@@ -135,23 +160,29 @@ const ArtBidding = () => {
 
       {/* Upload Art Section */}
       <div className="upload-container">
-  <h2 className="upload-title">Upload New Artwork</h2>
-  <form onSubmit={handleUpload} className="upload-form">
-    <label className="upload-label">Artwork Name</label>
-    <input type="text" name="name" placeholder="Enter artwork name" required className="upload-input" />
+        <h2 className="upload-title">Upload New Artwork</h2>
+        <form onSubmit={handleUpload} className="upload-form">
+          <label className="upload-label">Artwork Name</label>
+          <input type="text" name="name" placeholder="Enter artwork name" required className="upload-input" />
 
-    <label className="upload-label">Description</label>
-    <textarea name="description" placeholder="Write a short description..." className="upload-textarea"></textarea>
+          <label className="upload-label">Description</label>
+          <textarea name="description" placeholder="Write a short description..." className="upload-textarea"></textarea>
 
-    <label className="upload-label">Starting Price ($)</label>
-    <input type="number" name="start_price" placeholder="Enter starting price" required className="upload-input" />
+          <label className="upload-label">Starting Price ($)</label>
+          <input type="number" name="start_price" placeholder="Enter starting price" required className="upload-input" />
 
-    <label className="upload-label">Upload Image</label>
-    <input type="file" name="image" className="upload-file" />
+          <label className="upload-label">Fixed Price ($) (Optional)</label>
+          <input type="number" name="fixed_price" placeholder="Enter fixed price" className="upload-input" />
 
-    <button type="submit" className="upload-button">Upload Artwork</button>
-  </form>
-</div>
+          <label className="upload-label">Auction End Date</label>
+          <input type="datetime-local" name="end_date" required className="upload-input" />
+
+          <label className="upload-label">Upload Image</label>
+          <input type="file" name="image" className="upload-file" />
+
+          <button type="submit" className="upload-button">Upload Artwork</button>
+        </form>
+      </div>
     </div>
   );
 };
