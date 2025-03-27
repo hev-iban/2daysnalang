@@ -5,19 +5,11 @@ import "../styles/Header.css"; // Import the CSS file
 const Header = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token"); // Check if user is logged in
-  const [searchQuery, setSearchQuery] = useState("");
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/login"); // Redirect to login after logout
-  };
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim() !== "") {
-      navigate(`/search?query=${encodeURIComponent(searchQuery)}`);
-    }
   };
 
   return (
@@ -26,18 +18,6 @@ const Header = () => {
       <h1>
         <Link to="/" className="logo">ArtBid</Link>
       </h1>
-
-      {/* Search Bar */}
-      <form onSubmit={handleSearch} className="search-form">
-        <input 
-          type="text" 
-          placeholder="Search artworks..." 
-          className="search-input"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        <button type="submit" className="search-button">🔍</button>
-      </form>
 
       {/* Navigation */}
       <nav className="nav-links">
