@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const API_URL = "http://127.0.0.1:8000";
 
 const MainScreen = () => {
     const [user, setUser] = useState(null);
-    const [arts, setArts] = useState([]); // Store all artworks
-    const [searchQuery, setSearchQuery] = useState(""); // Search input
-    const [filteredArts, setFilteredArts] = useState([]); // Filtered results
+    const [arts, setArts] = useState([]);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [filteredArts, setFilteredArts] = useState([]);
 
     useEffect(() => {
         const storedUser = JSON.parse(localStorage.getItem("user")) || { username: "Guest" };
@@ -19,18 +20,16 @@ const MainScreen = () => {
         try {
             const response = await axios.get(`${API_URL}/api/arts/`);
             setArts(response.data);
-            setFilteredArts(response.data); // Initialize filteredArts with all artworks
+            setFilteredArts(response.data);
         } catch (error) {
             console.error("Error fetching artworks", error);
         }
     };
 
-    // Handle search query changes
     const handleSearchChange = (e) => {
         const query = e.target.value;
         setSearchQuery(query);
 
-        // Filter artworks based on search query
         if (query.trim() === "") {
             setFilteredArts(arts);
         } else {
@@ -43,36 +42,50 @@ const MainScreen = () => {
     };
 
     return (
-        <div className="container p-4">
-            <h2 className="text-2xl font-bold">Welcome, {user?.username}!</h2>
-            <p>You are now on the Main Screen.</p>
+        <div className="container mx-auto p-6">
+            <h2 className="text-3xl font-bold">Welcome, {user?.username}!</h2>
+            <p className="text-gray-600">Browse through the available artworks.</p>
 
             {/* Search Bar */}
             <div className="mt-4 mb-6">
                 <input
                     type="text"
                     placeholder="Search artworks..."
-                    className="p-2 w-full border rounded-lg"
+                    className="p-3 w-full border rounded-lg shadow-sm"
                     value={searchQuery}
                     onChange={handleSearchChange}
                 />
             </div>
 
-            <h3 className="text-xl font-semibold mt-4">Uploaded Artworks</h3>
-            <div className="mt-4 grid grid-cols-3 gap-4">
+            <h3 className="text-2xl font-semibold mt-4">Uploaded Artworks</h3>
+
+            {/* Art Cards Grid (6 cards per row) */}
+            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
                 {filteredArts.length > 0 ? (
                     filteredArts.map((art) => (
-                        <div key={art.uuid} className="border p-4 rounded-lg shadow">
-                            <img
-                                src={art.image ? `${API_URL}${art.image}` : "placeholder.jpg"}
-                                alt={art.name}
-                                className="w-full h-48 object-cover"
-                                onError={(e) => (e.target.src = "placeholder.jpg")}
-                            />
-                            <h2 className="text-lg font-semibold mt-2">{art.name}</h2>
-                            <p className="text-gray-600">{art.description}</p>
-                            <p className="font-bold">Starting Price: ${art.start_price}</p>
-                        </div>
+                        <Link 
+                            to={`/art/${art.uuid}`} 
+                            key={art.uuid} 
+                            className="block border rounded-lg shadow-lg bg-white transition-all duration-300 transform hover:scale-105 hover:shadow-xl"
+                            style={{ width: "100%", height: "350px" }} // Fixed card height
+                        >
+                            {/* Image Container */}
+                            <div className="w-full h-2/3 overflow-hidden rounded-t-lg">
+                                <img
+                                    src={art.image ? `${API_URL}${art.image}` : "placeholder.jpg"}
+                                    alt={art.name}
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => (e.target.src = "placeholder.jpg")}
+                                />
+                            </div>
+
+                            {/* Card Content */}
+                            <div className="p-4 h-1/3 flex flex-col justify-between">
+                                <h2 className="text-lg font-semibold truncate">{art.name}</h2>
+                                <p className="text-gray-500 text-sm truncate">{art.description}</p>
+                                <p className="font-bold text-blue-600 mt-2">Starting Price: ${art.start_price}</p>
+                            </div>
+                        </Link>
                     ))
                 ) : (
                     <p className="text-gray-500">No artworks found.</p>
