@@ -23,7 +23,7 @@ const Header = () => {
     <header className="bg-gray-900 text-white p-4 flex justify-between items-center">
       <h1>
         <Link 
-          to="/main" 
+          to="/" 
           className="text-blue-500 text-2xl font-bold hover:text-blue-300"
         >
           ArtBid

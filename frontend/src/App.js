@@ -12,10 +12,9 @@ function App() {
       <div className="App">
         <Header /> {/* Always visible */}
         <Routes>
-          <Route path="/" element={<h1>Home Page</h1>} />
+          <Route path="/" element={<MainScreen />} /> {/* Fix: Now shows MainScreen */}
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/main" element={<MainScreen />} />
           <Route path="/bidding" element={<ArtBidding />} />
         </Routes>
         <Footer /> {/* Always at the bottom */}

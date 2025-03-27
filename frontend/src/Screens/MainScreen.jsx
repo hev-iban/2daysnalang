@@ -1,27 +1,19 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const API_URL = "http://127.0.0.1:8000";
 
 const MainScreen = () => {
-    const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [arts, setArts] = useState([]); // Store all artworks
     const [searchQuery, setSearchQuery] = useState(""); // Search input
     const [filteredArts, setFilteredArts] = useState([]); // Filtered results
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (!token) {
-            alert("Please log in first.");
-            navigate("/login");
-        } else {
-            const storedUser = JSON.parse(localStorage.getItem("user")) || { username: "Guest" };
-            setUser(storedUser);
-            fetchArts();
-        }
-    }, [navigate]);
+        const storedUser = JSON.parse(localStorage.getItem("user")) || { username: "Guest" };
+        setUser(storedUser);
+        fetchArts();
+    }, []);
 
     const fetchArts = async () => {
         try {
