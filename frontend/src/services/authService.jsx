@@ -4,8 +4,8 @@ const API_URL = 'http://127.0.0.1:8000/api/';
 
 export const registerUser = async (userData) => {
     try {
-        const response = await axios.post(`${API_URL}register/`, userData, {
-            headers: { 'Content-Type': 'application/json' },
+        const response = await axios.post(`${API_URL}register/`, JSON.stringify(userData), {
+            headers: { 'Content-Type': 'application/json' }
         });
         console.log('User registered:', response.data);
         return response.data;
@@ -14,7 +14,6 @@ export const registerUser = async (userData) => {
         throw error.response?.data || { error: 'Registration failed' };
     }
 };
-
 
 
 export const loginUser = async (userData) => {

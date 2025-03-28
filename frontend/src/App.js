@@ -11,6 +11,7 @@ import Contact from "./footer/Contact";
 import FAQs from "./footer/FAQS";
 import PrivacyPolicy from "./footer/PrivacyPolicy";
 import TermsOfService from "./footer/TermsOfService";
+import ProfileScreen from "./Screens/ProfileScreen";
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/bidding" element={<ArtBidding />} />
+          <Route path="/profile" element={<ProfileScreen />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/faqs" element={<FAQs />} />

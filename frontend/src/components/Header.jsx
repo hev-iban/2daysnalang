@@ -1,5 +1,4 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
 import "../styles/Header.css"; // Import the CSS file
 
 const Header = () => {
@@ -30,7 +29,7 @@ const Header = () => {
           <>
             <Link to="/bidding" className="nav-link">Bidding</Link>
             <Link to="/profile" className="nav-link">Profile</Link>
-            <button onClick={handleLogout} className="logout-button">Logout</button>
+            <span className="nav-link logout-link" onClick={handleLogout}>Logout</span>
           </>
         )}
       </nav>

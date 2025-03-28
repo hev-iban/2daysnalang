@@ -4,10 +4,10 @@ from rest_framework import status
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
-from .serializers import RegisterSerializer, ArtSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.shortcuts import get_object_or_404
-from .models import Art
+from .models import Art, Bid
+from .serializers import RegisterSerializer, ArtSerializer, BidSerializer
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -16,7 +16,7 @@ def register_user(request):
     
     if serializer.is_valid():
         user = serializer.save()
-        user.set_password(serializer.validated_data['password'])  # Ensure password is hashed
+        user.set_password(serializer.validated_data['password'])  
         user.save()
         
         token, _ = Token.objects.get_or_create(user=user)
@@ -63,14 +63,10 @@ def login_user(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def upload_art(request):
-    """Allows an authenticated user to upload an art listing"""
     user = request.user
     data = request.data
-
-    # Check if image is provided
     image = request.FILES.get('image')
 
-    # Create the art instance
     art = Art.objects.create(
         user=user,
         name=data.get('name'),
@@ -87,7 +83,6 @@ def upload_art(request):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def list_arts(request):
-    """Retrieve all art listings"""
     arts = Art.objects.all().order_by('-created_at')
     serializer = ArtSerializer(arts, many=True)
     return Response(serializer.data)
@@ -96,7 +91,6 @@ def list_arts(request):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def art_detail(request, art_uuid):
-    """Retrieve details of a specific art using UUID"""
     art = get_object_or_404(Art, uuid=art_uuid)
     serializer = ArtSerializer(art, many=False)
     return Response(serializer.data)
@@ -105,7 +99,6 @@ def art_detail(request, art_uuid):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def place_bid(request, art_uuid):
-    """Place a bid on an artwork using UUID"""
     art = get_object_or_404(Art, uuid=art_uuid)
     user = request.user
     bid_amount = request.data.get('bid_amount')
@@ -113,8 +106,18 @@ def place_bid(request, art_uuid):
     if bid_amount is None or float(bid_amount) <= art.start_price:
         return Response({'error': 'Bid must be higher than the start price'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Update the start price to reflect the latest bid
+    new_bid = Bid.objects.create(art=art, user=user, amount=bid_amount)
+
     art.start_price = float(bid_amount)
     art.save()
 
-    return Response({'message': 'Bid placed successfully', 'new_price': art.start_price})
+    return Response({'message': 'Bid placed successfully', 'new_price': art.start_price}, status=status.HTTP_201_CREATED)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_bids(request, art_uuid):
+    art = get_object_or_404(Art, uuid=art_uuid)
+    bids = art.bids.all().order_by('-timestamp')
+    serializer = BidSerializer(bids, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)

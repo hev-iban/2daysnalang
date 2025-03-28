@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
+from .models import Art, Bid
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=6)
@@ -16,10 +17,16 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
         return user
 
-from rest_framework import serializers
-from .models import Art
 
 class ArtSerializer(serializers.ModelSerializer):
     class Meta:
         model = Art
         fields = '__all__'
+
+
+class BidSerializer(serializers.ModelSerializer):
+    user = serializers.CharField(source="user.username", read_only=True)
+
+    class Meta:
+        model = Bid
+        fields = ['user', 'amount', 'timestamp']

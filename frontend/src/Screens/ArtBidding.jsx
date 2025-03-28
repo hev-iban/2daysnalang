@@ -9,7 +9,7 @@ const ArtBidding = () => {
   const [arts, setArts] = useState([]);
   const [selectedArt, setSelectedArt] = useState(null);
   const [bidAmount, setBidAmount] = useState("");
-  const [token, setToken] = useState(localStorage.getItem("token") || "");
+  const token = localStorage.getItem("token") || "";
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate(); // Use navigate for redirection
 
