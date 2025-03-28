@@ -13,14 +13,14 @@ const ArtDetail = () => {
     const [bidAmount, setBidAmount] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const token = localStorage.getItem("token") || ""; // Removed setToken
+    const token = localStorage.getItem("token") || "";
 
     useEffect(() => {
         const fetchArt = async () => {
             try {
                 const response = await axios.get(`${API_URL}/api/arts/${id}/`);
                 setArt(response.data);
-                fetchBids(); // Ensures bid history updates
+                fetchBids();
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching art details", error);
@@ -39,7 +39,7 @@ const ArtDetail = () => {
         };
 
         fetchArt();
-    }, [id]); // No more missing dependency warning
+    }, [id]);
 
     const handleBid = async () => {
         if (!token) {
@@ -62,7 +62,7 @@ const ArtDetail = () => {
 
             alert("Bid placed successfully!");
             setBidAmount("");
-            setBids([{ amount: parseFloat(bidAmount), user: { username: "You" }, timestamp: new Date().toISOString() }, ...bids]); // Update UI instantly
+            setBids([{ amount: parseFloat(bidAmount), user: { username: "You" }, timestamp: new Date().toISOString() }, ...bids]);
         } catch (error) {
             alert("Failed to place bid. Please try again.");
             console.error(error);
@@ -74,29 +74,23 @@ const ArtDetail = () => {
 
     return (
         <div className="art-detail-container">
-            {/* Back Button */}
             <button className="back-button" onClick={() => navigate(-1)}>← Back</button>
+            <h2 className="art-title">{art?.name}</h2>
 
-            {/* Artwork Title */}
-            <h2 className="art-title">{art.name}</h2>
-
-            {/* Artwork Image */}
             <div className="art-image-container">
                 <img
-                    src={art.image ? `${API_URL}${art.image}` : "placeholder.jpg"}
-                    alt={art.name}
+                    src={art?.image ? `${API_URL}${art.image}` : "placeholder.jpg"}
+                    alt={art?.name}
                     className="art-image"
                     onError={(e) => (e.target.src = "placeholder.jpg")}
                 />
             </div>
 
-            {/* Artwork Description */}
-            <p className="art-description">{art.description}</p>
+            <p className="art-description">{art?.description}</p>
             <p className="current-price">
-                Current Price: ${bids.length > 0 ? bids[0].amount : art.start_price}
+                Current Price: ${bids.length > 0 ? bids[0].amount : art?.start_price}
             </p>
 
-            {/* Bidding Section */}
             <div className="bid-section">
                 <h3>Place a Bid</h3>
                 <div className="bid-input-container">
@@ -132,6 +126,13 @@ const ArtDetail = () => {
                 ) : (
                     <p className="text-gray-500 mt-3">No bids placed yet.</p>
                 )}
+            </div>
+
+            {/* Auction Result Button */}
+            <div className="result-section">
+                <button className="result-button" onClick={() => navigate(`/auction-result/${id}`)}>
+                    View Auction Result
+                </button>
             </div>
         </div>
     );
